@@ -38,7 +38,7 @@ export const signup = async (req, res) => {
       generateToken(newUser._id, res); // calling this function for jwt token
       await newUser.save();
       res
-        .status(201) // allok, so send all these data
+        .status(201) // all ok, so send all these data
         .json({
           _id: newUser._id,
           fullName: newUser.fullName,
@@ -52,14 +52,40 @@ export const signup = async (req, res) => {
     }
   } catch (error) {
     console.log("Error in signup controller", error.message);
-    res.status(400).json({
-      message: "Internal server error from authcontroller",
+    return res.status(400).json({
+      message: "Internal server error from authcontroller: signup",
     });
   }
 };
 
-export const login = (req, res) => {
-  res.send("login route");
+export const login = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Inavlid credentials : email" });
+    }
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      return res
+        .status(400)
+        .json({ message: "Inavlid credentials : password" });
+    }
+
+    generateToken(user._id, res);
+    res.status(200).json({
+      message: "user authenticated and jwt generated ",
+      id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      profilePic: user.profilePic,
+    });
+  } catch (error) {
+    console.log("Error in Login controller", error.message);
+    res.status(400).json({
+      message: "Internal server error from authcontroller: login",
+    });
+  }
 };
 
 export const logout = (req, res) => {
