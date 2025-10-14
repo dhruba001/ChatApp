@@ -8,6 +8,8 @@ const app = express();
 dotenv.config();
 const PORT = process.env.PORT;
 
+app.use(express.json()); // now in anywhere we can get data from req.body
+
 app.use("/api/auth", authRoutes);
 
 app.listen(PORT, () => {
