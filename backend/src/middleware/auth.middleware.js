@@ -34,7 +34,7 @@ export const protectRoute = async (req, res, next) => {
     }
 
     //*we're now putting the whole db entry for the respective user inside the req.user
-    //* so if we need id, we can do req.user._id
+    //* so if we need id, we can do req.user._id, only password is excluded
     req.user = user;
 
     //* we will go the next i.e updateProfile, check auth.route /update-profile
