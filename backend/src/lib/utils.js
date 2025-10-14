@@ -1,11 +1,13 @@
 import jwt from "jsonwebtoken";
 
 export const generateToken = (userId, res) => {
+  //*token generation takes userid, so token also has that value inside
   const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
     expiresIn: "7d", // user will have to login after 7 days
   });
   // generating token and then sending to user in cookie
   res.cookie("jwt", token, {
+    // token is in cookie named as jwt, we will get jwt in our project from parsing cookies
     maxAge: 7 * 24 * 60 * 60 * 1000, // maximum age in milliseconds
     httpOnly: true,
     sameSite: "strict",

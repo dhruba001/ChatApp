@@ -99,3 +99,5 @@ export const logout = (req, res) => {
       .json({ message: "internal server error while logging out" });
   }
 };
+
+export const updateProfile = async (req, res) => {};
