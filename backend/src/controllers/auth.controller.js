@@ -130,3 +130,15 @@ export const updateProfile = async (req, res) => {
       .json({ message: "internal server error : auth.controller" });
   }
 };
+
+export const checkAuth = (req, res) => {
+  //it will give us the authenticated user details, excluding password
+  //if any time app is refreshed we will check if user is still authenticated
+  //if yes keep loggedin or else send user to log in page
+  try {
+    res.status(200).json(req.user); // send user [ req.user] back to client, except password
+  } catch (error) {
+    console.log("error in checkauth controller", error.message);
+    res.status(500).json({ message: "internal server error : checkauth" });
+  }
+};
