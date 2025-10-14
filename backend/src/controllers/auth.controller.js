@@ -1,3 +1,4 @@
+import cloudinary from "../lib/cloudinary.js";
 import { generateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
@@ -100,4 +101,32 @@ export const logout = (req, res) => {
   }
 };
 
-export const updateProfile = async (req, res) => {};
+export const updateProfile = async (req, res) => {
+  try {
+    const { profilePic } = req.body; // we will get the photo from user
+
+    // auth.middleware sent this -> req.user = user; so req.user has all of user data who's logged in currently
+    const userId = req.user._id;
+    if (!profilePic) {
+      return res
+        .status(400)
+        .json({ message: "profile pic is required : auth.controller" });
+    }
+    // we will get a response with the secure url after upload is finished
+    const uploadResponse = await cloudinary.uploader.upload(profilePic);
+    const updatedUser = await User.findByIdAndUpdate(
+      userId, // to find the appropiate user
+      {
+        profilePic: uploadResponse.secure_url, // put the url in db under profilepic
+      },
+      { new: true } // now updatedUser will have the new user object, with new profilepic value, and other will stay same
+    );
+
+    res.send(200).json(updatedUser); // updated user has the latest value
+  } catch (error) {
+    console.log("error in update profile:", error);
+    res
+      .status(500)
+      .json({ message: "internal server error : auth.controller" });
+  }
+};
