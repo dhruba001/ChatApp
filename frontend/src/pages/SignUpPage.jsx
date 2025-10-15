@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-//import AuthImagePattern from "../components/AuthImagePattern";
+import AuthImagePattern from "../components/AuthImagePattern";
 import toast from "react-hot-toast";
 
 const SignUpPage = () => {
@@ -172,6 +172,13 @@ const SignUpPage = () => {
         </div>
       </div>
       {/*left side ends */}
+
+      {/* right side starts */}
+      <AuthImagePattern
+        title="Join our community"
+        subtitle="Connect with friends, share moments, and stay in touch with your loved ones."
+      />
+      {/*right  side ends */}
     </div>
   );
 };
