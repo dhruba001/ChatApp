@@ -1,3 +1,5 @@
+// it's a named export so we've to write : v2 as cloudinary
+// if it was default we coulf have directly written cloudinary
 import { v2 as cloudinary } from "cloudinary";
 
 /* 
