@@ -41,3 +41,32 @@ export const getMessages = async (req, res) => {
       .json({ error: "internal server error : getMessage controller" });
   }
 };
+
+export const sendMessage = async (req, res) => {
+  try {
+    const { image, text } = req.body; // take out text and image from message
+    const { id: receiverId } = req.params; // take id from req param [ heder] and save that value in receiver id
+    const senderId = req.body._id; // save current loggedin user value into sender id
+
+    let imageUrl; // declare an var for storing image url
+    if (image) {
+      const uploadResponse = await cloudinary.uploader.upload(image);
+      imageUrl = uploadResponse.secure_url; // we get secure url from cloudinary
+    }
+    // now send this data in message format
+    const newMessage = new Message({
+      receiverId,
+      senderId,
+      text,
+      image: imageUrl,
+    });
+
+    await newMessage.save(); //* this line saved data into mongoDB
+    res.status(201).json(newMessage, { message: "data sent " }); //* this line just returns the data
+  } catch (error) {
+    console.log("error in sending message", error.message);
+    res
+      .status(500)
+      .json({ error: "internal server error while sending message " });
+  }
+};
