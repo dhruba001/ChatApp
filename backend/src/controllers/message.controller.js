@@ -61,6 +61,11 @@ export const sendMessage = async (req, res) => {
       image: imageUrl,
     });
 
+    /* 
+save() → writes data to database
+res → sends data to client (browser, frontend, API caller)
+*/
+
     await newMessage.save(); //* this line saved data into mongoDB
     res.status(201).json(newMessage, { message: "data sent " }); //* this line just returns the data
   } catch (error) {
