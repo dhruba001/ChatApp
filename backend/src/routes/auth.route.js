@@ -22,4 +22,4 @@ router.put("/update-profile", protectRoute, updateProfile);
 
 router.get("/check", protectRoute, checkAuth); // to get auth status from protectroute middleware
 
-export default router;
+export default router; // we'll import it as authroute inside index.js
