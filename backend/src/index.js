@@ -14,7 +14,7 @@ const PORT = process.env.PORT;
 //middlewares
 app.use(express.json()); // now in anywhere we can get data from req.body
 app.use(cookieParser());
-app.use(cors({ origin: "http://localhost:5173/", credentials: true }));
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
 /*
 app.use("/api/auth", authRoutes); sets a base path for all routes defined inside authRoutes.

@@ -25,7 +25,7 @@ const SignUpPage = () => {
   //* used for the signup button,so when we press it it'll be the time we're in between
   //* like not authenticated but not loggedOut either, at that time the button will show
   //* dancing dots
-  const { signUp, isSigningUp } = useAuthStore();
+  const { signup, isSigningUp } = useAuthStore();
 
   //* if any data is missing it'll check
   const validateForm = () => {
@@ -43,7 +43,7 @@ const SignUpPage = () => {
     //* stops the browser’s default form submission behavior, allowing you to handle the submission with your own logic
     e.preventDefault();
     const success = validateForm();
-    if (success === true) signUp(formData);
+    if (success === true) signup(formData);
   };
 
   return (
