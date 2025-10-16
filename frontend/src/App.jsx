@@ -18,10 +18,15 @@ import { useEffect } from "react";
 import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 
+//* Theme store
+import { useThemeStore } from "./store/useThemeStore";
+
 const App = () => {
   //* when we call useAuthStore() -> zustand connects component to store
   //* useAuthStore() → calls that function useAuthStore, returning your defined states
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+
+  const { theme } = useThemeStore();
 
   useEffect(() => {
     checkAuth();
@@ -39,7 +44,7 @@ const App = () => {
   //* need navbar at top everytime in ui so it's outside of route
   //* routes will fetch components dynamically
   return (
-    <div>
+    <div data-theme={theme}>
       <Navbar />
       <Routes>
         <Route
