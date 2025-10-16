@@ -20,6 +20,7 @@ export const useAuthStore = create((set) => ({
   isLoggingIn: false,
   isCheckingAuth: true, // loading state, intially it is true, but as soon as we refresh page we are going to check
   // while checking we will show a loading spinner in the middle of the screen
+  isUpdatingProfile: "",
 
   //* these are functions taking the states
   checkAuth: async () => {
@@ -59,6 +60,19 @@ export const useAuthStore = create((set) => ({
       toast.error(error.response.data.message);
     } finally {
       set({ isLoggingIn: false });
+    }
+  },
+
+  updateProfile: async (data) => {
+    set({ isUpdatingProfile: true });
+    try {
+      const res = await axiosInstance.put("/auth/update-profile", data);
+      set({ authUser: res.data }); // so we know authuser is truthy so we're authenticated
+      toast.success("Update suceessfull");
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      set({ isUpdatingProfile: false });
     }
   },
 

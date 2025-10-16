@@ -122,7 +122,7 @@ export const updateProfile = async (req, res) => {
       { new: true } // now updatedUser will have the new user object, with new profilepic value, and other will stay same
     );
 
-    res.send(200).json(updatedUser); // updated user has the latest value
+    res.status(200).json(updatedUser); // updated user has the latest value
   } catch (error) {
     console.log("error in update profile:", error);
     res
