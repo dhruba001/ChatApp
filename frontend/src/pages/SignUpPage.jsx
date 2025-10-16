@@ -28,11 +28,22 @@ const SignUpPage = () => {
   const { signUp, isSigningUp } = useAuthStore();
 
   //* if any data is missing it'll check
-  const validateForm = () => {};
+  const validateForm = () => {
+    if (!formData.fullName.trim()) return toast.error("Full name is required");
+    if (!formData.email.trim()) return toast.error("Email is required");
+    if (!/\S+@\S+\.\S+/.test(formData.email))
+      return toast.error("Invalid Email");
+    if (!formData.password) return toast.error("Password is required");
+    if (formData.password.length < 6)
+      return toast.error("Password must be of 6 characters");
+    return true;
+  };
   //* for submit button
   const handleSubmit = (e) => {
     //* stops the browser’s default form submission behavior, allowing you to handle the submission with your own logic
     e.preventDefault();
+    const success = validateForm();
+    if (success === true) signUp(formData);
   };
 
   return (

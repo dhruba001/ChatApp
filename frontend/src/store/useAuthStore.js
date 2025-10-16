@@ -3,6 +3,7 @@
 
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
+import toast from "react-hot-toast";
 
 //* this will return an object, and that object is out initial state
 //* set is a setter function
@@ -32,5 +33,16 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-  signup: async (data) => {},
+  signup: async (data) => {
+    set({ isSigningUp: true });
+    try {
+      const res = await axiosInstance.post("/auth/signup", data);
+      set({ authUser: res.data }); // so we know authuser is truthy so we're authenticated
+      toast.success("Acount created suceessfully");
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      set({ isSigningUp: false });
+    }
+  },
 }));

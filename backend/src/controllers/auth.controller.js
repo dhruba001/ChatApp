@@ -36,8 +36,8 @@ export const signup = async (req, res) => {
     }); // not sending profile pic here, as it has default value ""
 
     if (newUser) {
-      generateToken(newUser._id, res); // calling this function for jwt token
-      await newUser.save();
+      generateToken(newUser._id, res); // calling this function for jwt token, it's attached to cookies
+      await newUser.save(); // save it in db
       res
         .status(201) // all ok, so send all these data
         .json({

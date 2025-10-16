@@ -16,6 +16,7 @@ import { useEffect } from "react";
 
 //* others
 import { Loader } from "lucide-react";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   //* when we call useAuthStore() -> zustand connects component to store
@@ -59,6 +60,7 @@ const App = () => {
           element={authUser ? <ProfilePage /> : <Navigate to={"/login"} />}
         />
       </Routes>
+      <Toaster />
     </div>
   );
 };
