@@ -14,11 +14,14 @@ import toast from "react-hot-toast";
 //* all these authuser and issignin are made by user here it's not coming from any other place
 
 export const useAuthStore = create((set) => ({
+  //* these are states, modified by set
   authUser: null, // initially authUser state is null as we don't know if user is authenticated or not
   isSigningUp: false,
   isLoggingIn: false,
   isCheckingAuth: true, // loading state, intially it is true, but as soon as we refresh page we are going to check
   // while checking we will show a loading spinner in the middle of the screen
+
+  //* these are functions taking the states
   checkAuth: async () => {
     //* it'll set authUser
     //* full explanation : https://chatgpt.com/share/68ef76c0-5e0c-8012-a814-c3d7f57bc5df
