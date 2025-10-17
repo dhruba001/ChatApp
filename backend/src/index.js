@@ -1,39 +1,42 @@
 import express from "express";
 import dotenv from "dotenv";
-import cookieParser from "cookie-parser"; // for getting jwt from cookie
-import authRoutes from "./routes/auth.route.js";
-import messageRoutes from "./routes/message.route.js";
-import { connectDB } from "./lib/db.js";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 
-const app = express();
+import path from "path";
+
+import { connectDB } from "./lib/db.js";
+
+import authRoutes from "./routes/auth.route.js";
+import messageRoutes from "./routes/message.route.js";
+import { app, server } from "./lib/socket.js";
 
 dotenv.config();
+
 const PORT = process.env.PORT;
+const __dirname = path.resolve();
 
-//middlewares
-app.use(express.json()); // now in anywhere we can get data from req.body
+app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
-/*
-app.use("/api/auth", authRoutes); sets a base path for all routes defined inside authRoutes.
-
-So for example, if inside auth.route.js we have:
-
-router.post("/signup", signup);
-router.post("/login", login);
-
-Then the actual endpoints become: POST /api/auth/signup , POST /api/auth/login
-
-Express automatically appends the paths from the router to the base path defined in app.use().
-*/
-
-//api routing paths : authroutes is auth.route.js
 app.use("/api/auth", authRoutes);
-app.use("/api/message", messageRoutes);
+app.use("/api/messages", messageRoutes);
 
-app.listen(PORT, () => {
-  console.log("server is running on localhost://" + PORT);
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+  });
+}
+
+server.listen(PORT, () => {
+  console.log("server is running on PORT:" + PORT);
   connectDB();
 });

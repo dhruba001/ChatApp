@@ -1,36 +1,27 @@
-//* store for authentication
-//* here we can have bunch of states and functions that we can use in different components
-
 import { create } from "zustand";
-import { axiosInstance } from "../lib/axios";
+import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
+import { io } from "socket.io-client";
 
-//* this will return an object, and that object is out initial state
-//* set is a setter function
-//* authUser and isCheckingAuth are keys in the state object you’re initializing.
-//* Zustand stores don’t need external data when created; you define what state exists and its initial value.
+const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:5001" : "/";
 
-//* it returns a custom react hook name useAuthStore -> used in app.jsx
-//* all these authuser and issignin are made by user here it's not coming from any other place
-
-export const useAuthStore = create((set) => ({
-  //* these are states, modified by set
-  authUser: null, // initially authUser state is null as we don't know if user is authenticated or not
+export const useAuthStore = create((set, get) => ({
+  authUser: null,
   isSigningUp: false,
   isLoggingIn: false,
-  isCheckingAuth: true, // loading state, intially it is true, but as soon as we refresh page we are going to check
-  // while checking we will show a loading spinner in the middle of the screen
-  isUpdatingProfile: "",
+  isUpdatingProfile: false,
+  isCheckingAuth: true,
+  onlineUsers: [],
+  socket: null,
 
-  //* these are functions taking the states
   checkAuth: async () => {
-    //* it'll set authUser
-    //* full explanation : https://chatgpt.com/share/68ef76c0-5e0c-8012-a814-c3d7f57bc5df
     try {
       const res = await axiosInstance.get("/auth/check");
+
       set({ authUser: res.data });
+      get().connectSocket();
     } catch (error) {
-      console.error("error in checkauth", error);
+      console.log("Error in checkAuth:", error);
       set({ authUser: null });
     } finally {
       set({ isCheckingAuth: false });
@@ -41,8 +32,9 @@ export const useAuthStore = create((set) => ({
     set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post("/auth/signup", data);
-      set({ authUser: res.data }); // so we know authuser is truthy so we're authenticated
-      toast.success("Acount created suceessfully");
+      set({ authUser: res.data });
+      toast.success("Account created successfully");
+      get().connectSocket();
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -54,8 +46,10 @@ export const useAuthStore = create((set) => ({
     set({ isLoggingIn: true });
     try {
       const res = await axiosInstance.post("/auth/login", data);
-      set({ authUser: res.data }); // so we know authuser is truthy so we're authenticated
-      toast.success("loggedIn suceessfully");
+      set({ authUser: res.data });
+      toast.success("Logged in successfully");
+
+      get().connectSocket();
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -63,26 +57,49 @@ export const useAuthStore = create((set) => ({
     }
   },
 
+  logout: async () => {
+    try {
+      await axiosInstance.post("/auth/logout");
+      set({ authUser: null });
+      toast.success("Logged out successfully");
+      get().disconnectSocket();
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  },
+
   updateProfile: async (data) => {
     set({ isUpdatingProfile: true });
     try {
       const res = await axiosInstance.put("/auth/update-profile", data);
-      set({ authUser: res.data }); // so we know authuser is truthy so we're authenticated
-      toast.success("Update suceessfull");
+      set({ authUser: res.data });
+      toast.success("Profile updated successfully");
     } catch (error) {
+      console.log("error in update profile:", error);
       toast.error(error.response.data.message);
     } finally {
       set({ isUpdatingProfile: false });
     }
   },
 
-  logout: async () => {
-    try {
-      await axiosInstance.post("/auth/logout");
-      set({ authUser: null });
-      toast.success("Loggedout Successfully");
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
+  connectSocket: () => {
+    const { authUser } = get();
+    if (!authUser || get().socket?.connected) return;
+
+    const socket = io(BASE_URL, {
+      query: {
+        userId: authUser._id,
+      },
+    });
+    socket.connect();
+
+    set({ socket: socket });
+
+    socket.on("getOnlineUsers", (userIds) => {
+      set({ onlineUsers: userIds });
+    });
+  },
+  disconnectSocket: () => {
+    if (get().socket?.connected) get().socket.disconnect();
   },
 }));

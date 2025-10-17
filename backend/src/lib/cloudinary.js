@@ -1,14 +1,7 @@
-// it's a named export so we've to write : v2 as cloudinary
-// if it was default we coulf have directly written cloudinary
 import { v2 as cloudinary } from "cloudinary";
 
-/* 
-That file is often imported very early — sometimes even before index.js runs your global setup.
-If you don’t import and call config() there, process.env.CLOUDINARY_API_KEY might still be 
-undefined at the moment this file executes. so we need to import and configure dot env once again
-last time we did it inside index.js
-*/
 import { config } from "dotenv";
+
 config();
 
 cloudinary.config({
