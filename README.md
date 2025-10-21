@@ -1,7 +1,7 @@
 # ✨ Full Stack Realtime Chat App ✨
 
 
-Highlights of the project 
+Highlights of the project :
 
 - 🌟 Tech stack: MERN + Socket.io + TailwindCSS + Daisy UI
 - 🎃 Authentication && Authorization with JWT
